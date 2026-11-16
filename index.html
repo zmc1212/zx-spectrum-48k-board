@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINCLAIR · ZX SPECTRUM 48K — 主板装配模拟</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+<div id="sheet">
+  <div id="stage"></div>
+
+  <!-- 图纸虚线内框 -->
+  <div id="frame-dashed"></div>
+
+  <!-- 左上标题卡（彩虹下划线由 CSS ::after 绘制） -->
+  <div id="card-title" class="card">
+    <div class="t1">SINCLAIR&ensp;·&ensp;ZX SPECTRUM 48K&ensp;·&ensp;ISSUE 3B</div>
+    <div class="t2">Fig. 02 — sixteen chips of RAM and a rainbow border, 1982</div>
+    <div class="t3">拖动旋转 · 滚轮缩放 · 点击零件看标签 · 空格暂停 · R 重播 · 数字键 1-8 跳阶段</div>
+  </div>
+
+  <!-- 右上状态卡 -->
+  <div id="card-status" class="card">
+    <div class="k">MODE</div>
+    <div class="mode" id="st-mode">—</div>
+    <div class="row"><span class="k">CLOCK</span><b id="st-clock">—</b></div>
+    <div class="row"><span class="k">RAM</span><b id="st-ram">0K</b></div>
+    <div class="row"><span class="k">PARTS</span><b id="st-parts">0 / 31</b></div>
+  </div>
+
+  <!-- 底部阶段胶囊 -->
+  <div id="phase-pill"><i id="phase-dot"></i><span id="phase-text">STANDBY</span></div>
+
+  <!-- 底部四角 -->
+  <div id="corner-left" class="corner">ZX SPECTRUM · ISSUE 3B · 1982</div>
+  <div id="corner-right" class="corner">48K RAM · 16K ROM · 3.5469 MHZ</div>
+
+  <!-- 底部仪表盘（由 dashboard.js 生成） -->
+  <div id="dash"></div>
+
+  <!-- 启动失败提示 -->
+  <div id="boot-error" hidden>
+    <b>页面未能启动</b>
+    <p id="boot-error-detail">脚本加载失败。</p>
+    <p>双击打不开时，请在本目录运行：<code>python3 -m http.server 8080</code>，然后访问 <code>http://127.0.0.1:8080</code></p>
+  </div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="src/textures.js"></script>
+<script src="src/orbit.js"></script>
+<script src="src/labels.js"></script>
+<script src="src/scene.js"></script>
+<script src="src/parts.js"></script>
+<script src="src/dashboard.js"></script>
+<script src="src/timeline.js"></script>
+<script src="src/main.js"></script>
+<script>
+(function () {
+  var banner = document.getElementById("boot-error");
+  function show(msg) {
+    if (!banner.hidden) return;
+    document.getElementById("boot-error-detail").textContent = msg || "未知错误";
+    banner.hidden = false;
+  }
+  window.ZX48_SHOW_BOOT_ERROR = show;
+  window.addEventListener("error", function (e) {
+    show((e.message || "脚本错误") + (e.filename ? "  @" + e.filename.split("/").pop() + ":" + (e.lineno || 0) : ""));
+  });
+  setTimeout(function () {
+    if (!window.ZX48_BOOTED) show("入口脚本未能完成初始化（可能被浏览器拦截或路径错误）。");
+  }, 6000);
+})();
+</script>
+</body>
+</html>
