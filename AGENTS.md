@@ -24,11 +24,12 @@
 
 ## 验收清单
 
-1. HTTP 打开 → 裸板飞入平放 → 8 颗 4116 左→右逐颗落板 → 8 颗 4532 → ULA/显存 →
-   Z80/ROM/晶振 → RF/磁带/排线/电源区 → 电源线接上后屏幕亮起
+1. HTTP 打开 → 裸板飞入平放 → 8 颗 4116 左→右逐颗落板 → 8 颗 4532 → ULA →
+   Z80/ROM/晶振 → RF/EAR+MIC/两条 8 路膜排线/电源区 → 电源线接上后屏幕亮起
    "© 1982 Sinclair Research Ltd" + 闪烁光标 → 进入 LOAD 条纹屏；全程控制台无
    资源加载错误。
-2. 按 8（LOAD）：屏幕切为上下彩虹条纹 + 中间 "LOAD " 光标动画，TAPE 面板出现
-   ZX pilot tone 条纹波形，右上 MODE 变 LOADING，Z80 寄存器 PC 停在 0556。
-3. 点击 ULA 弹出 "FERRANTI ULA · 5C126" 标签；RAM 落板过程中 MEMORY 面板按
+2. 按 8（LOAD）：屏幕切为上下水平条纹（pilot tone 红/青，数据段蓝/黄，与 TAPE
+   面板状态联动）+ 中间 "LOAD " 光标动画，TAPE 面板出现 ZX pilot tone 条纹波形，
+   右上 MODE 变 LOADING，Z80 寄存器 PC 停在 0556。
+3. 点击 ULA 弹出 "FERRANTI ULA · 6C001E-5" 标签；RAM 落板过程中 MEMORY 面板按
    4116/4532 落位逐段点亮；双击 index.html 表现与 1、2 一致。

@@ -11,9 +11,6 @@
   var screenMode = "off";
   var screenAcc = 1, screenTime = 0;
 
-  /* ZX 调色板（黑/蓝/红/品红/绿/青/黄/白） */
-  var PAL = ["#000000", "#0000D7", "#D70000", "#D700D7", "#00D700", "#00D7D7", "#D7D700", "#D7D7D7"];
-
   function mesh(geo, mat, x, y, z, cast, receive) {
     var m = new THREE.Mesh(geo, mat);
     if (x !== undefined) m.position.set(x, y, z);
@@ -107,21 +104,22 @@
       mesh: mesh,
       M: M,
       clickables: [
-        { group: boardGroup, name: "PCB · ISSUE 3B", sub: "24 × 16 CM · DOUBLE-SIDED" },
-        { group: edgeStrip, name: "EDGE CONNECTOR", sub: "23 × 2 WAY · GOLD FINGERS" },
+        { group: boardGroup, name: "PCB · ISSUE 3B", sub: "24 × 16 CM · SINGLE-SIDED" },
+        { group: edgeStrip, name: "EDGE CONNECTOR", sub: "2 × 28 WAY · GOLD FINGERS" },
         { group: screenGroup, name: "SCREEN", sub: "256 × 192 · ULA OUTPUT" }
       ],
       flyBoardIn: flyBoardIn,
       sealBoard: sealBoard,
       resetBoard: resetBoard,
-      setScreen: setScreen
+      setScreen: setScreen,
+      setLoadTape: setLoadTape
     };
   }
 
   /* 主板：PCB 盒 + 丝印贴图 + 底部金手指 + 电源插座 + RF 同轴出口 */
   function buildBoard() {
     var g = new THREE.Group();
-    var sideMat = new THREE.MeshStandardMaterial({ color: 0x14331f, roughness: 0.7 });
+    var sideMat = new THREE.MeshStandardMaterial({ color: 0x7fa887, roughness: 0.7 });
     var topMat = new THREE.MeshStandardMaterial({ map: ZX48.Textures.pcb(), roughness: 0.62, metalness: 0.04 });
     var pcb = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.05, 1.6),
       [sideMat, sideMat, topMat, sideMat, sideMat, sideMat]);
@@ -203,17 +201,27 @@
     drawScreenFrame("off", 0);
   }
 
-  /* 屏幕条纹带：按 ZX 调色板横向滚动 */
-  function stripes(ctx, y0, y1, off, band) {
-    for (var x = 0; x < 320; x += band) {
-      var ci = Math.floor((x + off) / band) % PAL.length;
-      if (ci < 0) ci += PAL.length;
-      ctx.fillStyle = PAL[ci];
-      ctx.fillRect(x, y0, band, y1 - y0);
+  /* LOAD 边框状态：pilot tone（红/青横条纹）或 data（蓝/黄），由 Timeline 随磁带状态切换 */
+  var loadTape = "pilot";
+  function setLoadTape(tape) {
+    loadTape = tape === "data" ? "data" : "pilot";
+  }
+
+  /* 真实 LOAD 边框：整行扫描线一色，上下 1/3 水平条纹
+     pilot tone = 红/青交替，数据段 = 蓝/黄交替（每行约 3px，偶有相位翻转） */
+  function loadStripes(ctx, y0, y1, t) {
+    var a = loadTape === "data" ? "#0000D7" : "#D70000";
+    var b = loadTape === "data" ? "#D7D700" : "#00D7D7";
+    var band = 3;
+    var flip = Math.floor(t * 1.5) % 2;
+    var i = 0;
+    for (var y = y0; y < y1; y += band, i++) {
+      ctx.fillStyle = ((i + flip) % 2 === 0) ? a : b;
+      ctx.fillRect(0, y, 320, Math.min(band, y1 - y));
     }
   }
 
-  /* 屏幕内容：off / boot（© 1982 + 闪烁光标）/ load（彩虹条纹 + LOAD） */
+  /* 屏幕内容：off / boot（© 1982 + 闪烁光标）/ load（水平条纹 + LOAD） */
   function drawScreenFrame(mode, t) {
     var ctx = scrCtx;
     if (!ctx) return;
@@ -236,11 +244,11 @@
         ctx.fillStyle = "#E8E8E8";
         ctx.fillRect(12, 214, 11, 14);
       }
-    } else {   // load：上下 1/3 宽彩条纹，中间黑底 LOAD
+    } else {   // load：上下 1/3 水平条纹（pilot 红/青、data 蓝/黄），中间黑底 LOAD
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, 320, 240);
-      stripes(ctx, 0, 80, t * 42, 13);
-      stripes(ctx, 160, 240, t * 42 * 1.35 + 31, 13);
+      loadStripes(ctx, 0, 80, t);
+      loadStripes(ctx, 160, 240, t * 1.35 + 0.5);
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 80, 320, 80);
       ctx.fillStyle = "#E8E8E8";

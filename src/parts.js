@@ -1,4 +1,4 @@
-/* 31 个零件建模 + 分阶段飞行装配控制器（按时间线阶段逐批落板） */
+/* 30 个零件建模 + 分阶段飞行装配控制器（按时间线阶段逐批落板） */
 (function (ZX48) {
   var list = [];           // {id,name,sub,kind,phase,delay,group,target,yaw,start,mid,line,...}
   var flyingSet = [];      // 当前阶段正在飞行的零件
@@ -7,17 +7,18 @@
   var seatedCount = 0;
 
   /* ---- 芯片顶面贴图（同型号共享一张） ---- */
-  var tex4116, tex4532, texULA, texZ80, texROM, tex6116, texLM311, tex7805, tex78M12, texRF;
+  var tex4116, tex4532, texULA, texZ80, texROM, tex7805, tex78M12, texRF;
 
   function makeChipTextures() {
     var T = ZX48.Textures;
     tex4116 = T.chipTop(["4116", "16K × 1"]);
-    tex4532 = T.chipTop(["4532", "32K × 4"]);
-    texULA = T.chipTop(["FERRANTI", "ULA 5C126"]);
+    /* TMS4532 是 64K×1 颗粒，板上当 32K×1 用（关闭高半区） */
+    tex4532 = T.chipTop(["4532", "64K × 1 · 32K USED"]);
+    /* Issue 3B ULA：40 脚平封 DIP，丝印 6C001E-x */
+    texULA = T.chipTop(["FERRANTI", "6C001E-5"]);
     texZ80 = T.chipTop(["Z80A-CPU", "DIP-40"]);
-    texROM = T.chipTop(["2364", "48K BASIC"]);
-    tex6116 = T.chipTop(["6116", "2K × 8"]);
-    texLM311 = T.chipTop(["LM311N", ""]);
+    /* 48K ROM 为 23128 类 16K×8（28 脚），不是 8K×8 的 2364 */
+    texROM = T.chipTop(["23128", "48K BASIC"]);
     tex7805 = T.chipTop(["L7805", "+5V"]);
     tex78M12 = T.chipTop(["78M12", "+12V"]);
     texRF = T.chipTop(["TV MODULATOR", "UHF OUT"], "#DDDCD6", "#2A2C2E");
@@ -131,7 +132,7 @@
     return g;
   }
 
-  /* 磁带座：3.5mm EAR/MIC 插座，从左缘伸出 */
+  /* 3.5mm 磁带插座：EAR / MIC 两颗独立插座，从左缘伸出 */
   function tapeJack() {
     var M = ZX48.Scene3D.M;
     var g = new THREE.Group();
@@ -145,14 +146,14 @@
     return g;
   }
 
-  /* 膜键盘排线：扁平灰带从板前缘伸到台面 */
+  /* 膜键盘排线：真实膜是两条 8 路插头，扁平灰带从板前缘伸到台面 */
   function membrane() {
     var M = ZX48.Scene3D.M;
     var g = new THREE.Group();
-    var rib = mesh(new THREE.BoxGeometry(0.3, 0.008, 0.62), M.ribbon, 0, 0.043, 0.08);
+    var rib = mesh(new THREE.BoxGeometry(0.14, 0.008, 0.62), M.ribbon, 0, 0.043, 0.08);
     rib.rotation.x = 0.075;
     g.add(rib);
-    g.add(mesh(new THREE.BoxGeometry(0.27, 0.034, 0.12), M.plastic, 0, 0.06, -0.22));
+    g.add(mesh(new THREE.BoxGeometry(0.12, 0.034, 0.12), M.plastic, 0, 0.06, -0.22));
     return g;
   }
 
@@ -195,56 +196,44 @@
         });
       })(i);
     }
-    /* 阶段 3：8 × 4532（32K DRAM） */
+    /* 阶段 3：8 × 4532（32K DRAM：64K×1 颗粒关半区使用） */
     for (a = 0; a < 8; a++) {
       (function (n) {
         defs.push({
-          id: "r32-" + n, name: "4532 DRAM", sub: "32K × 4", kind: "4532",
+          id: "r32-" + n, name: "4532 DRAM", sub: "64K × 1 · 32K USED", kind: "4532",
           phase: 2, delay: 0.1 + n * 0.42,
           pos: [-1.1 + n * 0.21, 0.33], landY: 0.05, yaw: 0, anchorY: 0.1,
           build: function () { return dip(0.2, 0.075, 16, tex4532); }
         });
       })(a);
     }
-    /* 阶段 4：ULA + 2 × 6116 显存 */
+    /* 阶段 4：ULA（40 脚平封 DIP，显示文件直接读主 DRAM——板上没有独立显存 SRAM） */
     defs.push({
-      id: "ula", name: "FERRANTI ULA", sub: "5C126 · CUSTOM CHIP", kind: null,
+      id: "ula", name: "FERRANTI ULA", sub: "6C001E-5 · CUSTOM CHIP", kind: null,
       phase: 3, delay: 0.15,
-      pos: [0.02, -0.5], landY: 0.05, yaw: 0, anchorY: 0.12,
-      build: function () { return dip(0.37, 0.155, 28, texULA, 0.05); }
+      pos: [0.0, -0.5], landY: 0.05, yaw: 0, anchorY: 0.12,
+      build: function () { return dip(0.42, 0.155, 40, texULA, 0.042); }
     });
+    /* 阶段 5：Z80A + 23128 ROM + 晶振 */
     defs.push({
-      id: "vram0", name: "6116 SRAM", sub: "2K × 8 · DISPLAY FILE", kind: null,
-      phase: 3, delay: 1.5,
-      pos: [-0.02, 0.62], landY: 0.05, yaw: 0, anchorY: 0.1,
-      build: function () { return dip(0.31, 0.15, 24, tex6116); }
-    });
-    defs.push({
-      id: "vram1", name: "6116 SRAM", sub: "2K × 8 · ATTRIBUTES", kind: null,
-      phase: 3, delay: 2.7,
-      pos: [0.36, 0.62], landY: 0.05, yaw: 0, anchorY: 0.1,
-      build: function () { return dip(0.31, 0.15, 24, tex6116); }
-    });
-    /* 阶段 5：Z80A + 2364 ROM + 晶振 */
-    defs.push({
-      id: "z80", name: "Z80A CPU", sub: "DIP-40 · 3.5469 MHZ", kind: null,
+      id: "z80", name: "Z80A CPU", sub: "DIP-40 · 3.5 MHZ", kind: null,
       phase: 4, delay: 0.2,
       pos: [0.32, -0.38], landY: 0.05, yaw: Math.PI / 2, anchorY: 0.12,
       build: function () { return dip(0.52, 0.15, 40, texZ80); }
     });
     defs.push({
-      id: "rom", name: "2364 ROM", sub: "16K · 48K BASIC", kind: "2364",
+      id: "rom", name: "23128 ROM", sub: "16K × 8 · 48K BASIC", kind: "23128",
       phase: 4, delay: 1.6,
       pos: [-0.34, -0.55], landY: 0.05, yaw: 0, anchorY: 0.1,
-      build: function () { return dip(0.31, 0.15, 24, texROM); }
+      build: function () { return dip(0.37, 0.15, 28, texROM); }
     });
     defs.push({
-      id: "xtal", name: "CRYSTAL", sub: "3.5469 MHZ", kind: "XTAL",
+      id: "xtal", name: "CRYSTAL", sub: "14 MHZ · ÷4 → 3.5 MHZ", kind: "XTAL",
       phase: 4, delay: 3.0,
       pos: [0.62, -0.55], landY: 0.05, yaw: 0.3, anchorY: 0.08,
       build: crystal
     });
-    /* 阶段 6：RF 盒 / 磁带座 / 键盘排线 / 电源区 / LM311 */
+    /* 阶段 6：RF 盒 / EAR+MIC 插座 / 键盘排线 / 电源区 */
     defs.push({
       id: "rf", name: "RF MODULATOR", sub: "UHF TV OUT", kind: null,
       phase: 5, delay: 0.1,
@@ -252,15 +241,27 @@
       build: rfBox
     });
     defs.push({
-      id: "tape", name: "TAPE JACK", sub: "3.5MM EAR/MIC", kind: null,
+      id: "ear", name: "EAR JACK", sub: "3.5MM · TAPE INPUT", kind: null,
       phase: 5, delay: 0.52,
-      pos: [-1.16, 0.15], landY: 0.05, yaw: 0, anchorY: 0.12,
+      pos: [-1.16, 0.30], landY: 0.05, yaw: 0, anchorY: 0.12,
       build: tapeJack
     });
     defs.push({
-      id: "membrane", name: "MEMBRANE", sub: "40-WAY KEYBOARD RIBBON", kind: null,
+      id: "mic", name: "MIC JACK", sub: "3.5MM · TAPE OUTPUT", kind: null,
+      phase: 5, delay: 0.78,
+      pos: [-1.16, 0.02], landY: 0.05, yaw: 0, anchorY: 0.12,
+      build: tapeJack
+    });
+    defs.push({
+      id: "mem0", name: "MEMBRANE A", sub: "8-WAY KEYBOARD HEADER", kind: null,
       phase: 5, delay: 0.94,
-      pos: [0.78, 1.08], landY: 0.005, yaw: 0, anchorY: 0.12,
+      pos: [0.70, 1.08], landY: 0.005, yaw: 0, anchorY: 0.12,
+      build: membrane
+    });
+    defs.push({
+      id: "mem1", name: "MEMBRANE B", sub: "8-WAY KEYBOARD HEADER", kind: null,
+      phase: 5, delay: 1.16,
+      pos: [0.92, 1.08], landY: 0.005, yaw: 0, anchorY: 0.12,
       build: membrane
     });
     defs.push({
@@ -286,12 +287,6 @@
       phase: 5, delay: 2.62,
       pos: [-0.64, -0.38], landY: 0.05, yaw: 0, anchorY: 0.08,
       build: diodes
-    });
-    defs.push({
-      id: "lm311", name: "LM311", sub: "TAPE COMPARATOR", kind: null,
-      phase: 5, delay: 3.04,
-      pos: [-1.02, -0.18], landY: 0.05, yaw: 0, anchorY: 0.08,
-      build: function () { return dip(0.1, 0.08, 8, texLM311, 0.042); }
     });
     /* 阶段 7：电源线接上 */
     defs.push({

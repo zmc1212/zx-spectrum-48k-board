@@ -7,7 +7,7 @@
       cam: { theta: -0.52, phi: 0.92, r: 2.35, target: [-0.55, 0.06, 0.08] }, drift: 0.02 },
     { id: "ram32", name: "32K DRAM · 8 × 4532", dur: 6, dot: "yellow",
       cam: { theta: -0.34, phi: 0.92, r: 2.35, target: [0.62, 0.06, 0.08] }, drift: 0.02 },
-    { id: "ula", name: "ULA + VIDEO RAM", dur: 6, dot: "green",
+    { id: "ula", name: "FERRANTI ULA", dur: 6, dot: "green",
       cam: { theta: -0.6, phi: 0.95, r: 2.6, target: [0.05, 0.1, -0.25] }, drift: 0.018 },
     { id: "cpu", name: "Z80A + 16K ROM", dur: 5, dot: "cyan",
       cam: { theta: -0.78, phi: 0.92, r: 2.5, target: [0.28, 0.08, -0.35] }, drift: 0.015 },
@@ -22,31 +22,31 @@
   /* 每阶段固定标签（at = 进入阶段后延时出现秒数） */
   var PINNED = {
     pcb: { at: 1.9, items: function () {
-      return [{ id: "p-edge", obj: ZX48.Scene3D.edgeStrip, text: "EDGE CONNECTOR", sub: "23 × 2 · GOLD FINGERS" }];
+      return [{ id: "p-edge", obj: ZX48.Scene3D.edgeStrip, text: "EDGE CONNECTOR", sub: "2 × 28 · GOLD FINGERS" }];
     } },
     ram16: { at: 0.5, items: function () {
       return [{ id: "p-r16", obj: ZX48.Parts.group("r16-0"), text: "4116 · 16K×1 DRAM", sub: "+5V / +12V / −5V" }];
     } },
     ram32: { at: 0.5, items: function () {
-      return [{ id: "p-r32", obj: ZX48.Parts.group("r32-0"), text: "4532 · 32K×4 DRAM", sub: "BANKS $8000-$FFFF" }];
+      return [{ id: "p-r32", obj: ZX48.Parts.group("r32-0"), text: "4532 · 64K×1 DIE", sub: "32K USED · $8000-$FFFF" }];
     } },
     ula: { at: 0.5, items: function () {
       return [
-        { id: "p-ula", obj: ZX48.Parts.group("ula"), text: "ULA 5C126", sub: "the custom chip that makes the rainbow", tone: "white" },
-        { id: "p-vram", obj: ZX48.Parts.group("vram0"), text: "6116 × 2", sub: "DISPLAY + ATTRS", tone: "white" }
+        { id: "p-ula", obj: ZX48.Parts.group("ula"), text: "ULA 6C001E-5", sub: "custom chip · video reads main DRAM", tone: "white" }
       ];
     } },
     cpu: { at: 0.5, items: function () {
       return [
-        { id: "p-z80", obj: ZX48.Parts.group("z80"), text: "Z80A · 3.5469 MHZ" },
+        { id: "p-z80", obj: ZX48.Parts.group("z80"), text: "Z80A · 3.5 MHZ" },
         { id: "p-rom", obj: ZX48.Parts.group("rom"), text: "16K ROM · 48K BASIC", tone: "white" }
       ];
     } },
     conn: { at: 0.4, items: function () {
       return [
         { id: "p-rf", obj: ZX48.Parts.group("rf"), text: "RF MODULATOR · UHF" },
-        { id: "p-tape", obj: ZX48.Parts.group("tape"), text: "TAPE · 3.5MM", tone: "white" },
-        { id: "p-mem", obj: ZX48.Parts.group("membrane"), text: "KEYBOARD MEMBRANE" },
+        { id: "p-ear", obj: ZX48.Parts.group("ear"), text: "EAR · TAPE IN" },
+        { id: "p-mic", obj: ZX48.Parts.group("mic"), text: "MIC · TAPE OUT", tone: "white" },
+        { id: "p-mem", obj: ZX48.Parts.group("mem0"), text: "MEMBRANE · 2 × 8-WAY" },
         { id: "p-psu", obj: ZX48.Parts.group("reg5"), text: "7805 · +5V", tone: "white" }
       ];
     } },
@@ -54,7 +54,7 @@
       return [{ id: "p-scr", obj: ZX48.Scene3D.screenGroup, text: "© 1982 SINCLAIR RESEARCH", sub: "256 × 192 · 50 HZ" }];
     } },
     load: { at: 0.4, items: function () {
-      return [{ id: "p-scr", obj: ZX48.Scene3D.screenGroup, text: "LOAD · PILOT TONE", sub: "RAINBOW BORDER · 50 HZ", tone: "white" }];
+      return [{ id: "p-scr", obj: ZX48.Scene3D.screenGroup, text: "LOAD · PILOT TONE", sub: "RED / CYAN STRIPES · 50 HZ", tone: "white" }];
     } }
   };
 
@@ -178,7 +178,7 @@
     st.seated = ZX48.Parts.seatedCount;
     st.n16 = ZX48.Parts.landedKind("4116");
     st.n32 = ZX48.Parts.landedKind("4532");
-    st.romIn = ZX48.Parts.landedKind("2364") > 0;
+    st.romIn = ZX48.Parts.landedKind("23128") > 0;
     st.xtalIn = ZX48.Parts.landedKind("XTAL") > 0;
     st.ramK = st.n16 * 2 + st.n32 * 4;
     st.mem.disp = st.mem.b1 = st.n16 / 8;
@@ -199,8 +199,9 @@
     }
     applyScreen();
 
-    /* ---- 磁带状态：load 阶段 pilot tone + 周期性数据突发 ---- */
+    /* ---- 磁带状态：load 阶段 pilot tone + 周期性数据突发（同步 LOAD 边框条纹颜色） ---- */
     st.tape = idx === 7 ? ((st.time % 5) < 1.4 ? "data" : "pilot") : "idle";
+    ZX48.Scene3D.setLoadTape(st.tape);
 
     /* ---- 电源轨斜坡 ---- */
     if (st.power) {
@@ -229,9 +230,9 @@
     /* ---- 状态卡 / 阶段胶囊 ---- */
     dom.mode.textContent = st.mode;
     dom.mode.className = "mode" + (st.mode === "LOADING" ? " loading" : (st.mode === "BOOT" ? " boot" : ""));
-    dom.clock.textContent = st.xtalIn ? "3.5469 MHZ" : "—";
+    dom.clock.textContent = st.xtalIn ? "3.5 MHZ" : "—";
     dom.ram.textContent = st.ramK + "K";
-    dom.parts.textContent = st.seated + " / 31";
+    dom.parts.textContent = st.seated + " / 30";
     dom.pill.textContent = ph.name;
     dom.dot.className = ph.dot;
 

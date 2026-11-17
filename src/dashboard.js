@@ -25,7 +25,7 @@
       '<div class="legend"><span><i style="background:#3EB435"></i>ROM 16K</span>' +
       '<span><i style="background:#22B0C8"></i>DISPLAY 6.7K</span>' +
       '<span><i style="background:#4169D8"></i>RAM BANKS</span>' +
-      '<span id="mem-seat" class="seat">0 / 31 SEATED</span></div>' +
+      '<span id="mem-seat" class="seat">0 / 30 SEATED</span></div>' +
       '</div></section>' +
 
       '<section class="panel"><header><i class="dot red"></i><b>Z80A</b><span class="meta">REGISTERS · 0.5S TICK</span></header>' +
@@ -36,7 +36,7 @@
       '<div class="reg"><span>BC</span><b id="rg-bc">----</b></div>' +
       '<div class="reg"><span>DE</span><b id="rg-de">----</b></div>' +
       '<div class="reg"><span>HL</span><b id="rg-hl">----</b></div>' +
-      '</div><div class="panel-foot"><span class="chip" id="rg-clk">CLK 3.5469 MHZ</span><span id="rg-note">HALT</span></div>' +
+      '</div><div class="panel-foot"><span class="chip" id="rg-clk">CLK 3.5 MHZ</span><span id="rg-note">HALT</span></div>' +
       '</div></section>' +
 
       '<section class="panel"><header><i class="dot cyan"></i><b>ULA</b><span class="meta">FRAME COUNTER · 50 HZ</span></header>' +
@@ -47,7 +47,7 @@
 
       '<section class="panel"><header><i class="dot yellow"></i><b>TAPE</b><span class="meta">EAR · 3.5MM</span></header>' +
       '<div class="body"><canvas id="c-tape"></canvas>' +
-      '<div class="panel-foot"><span class="chip" id="tape-chip">IDLE</span><span id="tape-note">LM311 COMPARATOR</span></div>' +
+      '<div class="panel-foot"><span class="chip" id="tape-chip">IDLE</span><span id="tape-note">EAR → ULA · RC BIAS</span></div>' +
       '</div></section>' +
 
       '<section class="panel"><header><i class="dot blue"></i><b>RAILS</b><span class="meta">9V DC IN</span></header>' +
@@ -206,7 +206,7 @@
     drawUla(st);
     drawTape(st, dt);
     drawRails(st);
-    document.getElementById("mem-seat").textContent = st.seated + " / 31 SEATED";
+    document.getElementById("mem-seat").textContent = st.seated + " / 30 SEATED";
   }
 
   ZX48.Dashboard = { build: buildDOM, update: update };
