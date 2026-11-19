@@ -34,6 +34,8 @@
       } else if (e.code === "KeyR") {
         ZX48.Timeline.restart();
         document.getElementById("phase-text").style.opacity = "1";
+      } else if (e.code === "KeyD") {
+        document.body.classList.toggle("no-dash");
       } else if (/^Digit[1-8]$/.test(e.code)) {
         ZX48.Timeline.seek(PHASE_KEYS[Number(e.code.slice(5)) - 1]);
         document.getElementById("phase-text").style.opacity = "1";

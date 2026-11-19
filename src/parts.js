@@ -189,7 +189,7 @@
     for (i = 0; i < 8; i++) {
       (function (n) {
         defs.push({
-          id: "r16-" + n, name: "4116 DRAM", sub: "16K × 1 · 3 RAILS", kind: "4116",
+          id: "r16-" + n, name: "内存颗粒 4116", sub: "16K × 1 · 3 RAILS", kind: "4116",
           phase: 1, delay: 0.1 + n * 0.42,
           pos: [-1.1 + n * 0.21, 0.05], landY: 0.05, yaw: 0, anchorY: 0.1,
           build: function () { return dip(0.2, 0.075, 16, tex4116); }
@@ -200,7 +200,7 @@
     for (a = 0; a < 8; a++) {
       (function (n) {
         defs.push({
-          id: "r32-" + n, name: "4532 DRAM", sub: "64K × 1 · 32K USED", kind: "4532",
+          id: "r32-" + n, name: "内存颗粒 4532", sub: "64K × 1 · 32K USED", kind: "4532",
           phase: 2, delay: 0.1 + n * 0.42,
           pos: [-1.1 + n * 0.21, 0.33], landY: 0.05, yaw: 0, anchorY: 0.1,
           build: function () { return dip(0.2, 0.075, 16, tex4532); }
@@ -209,88 +209,88 @@
     }
     /* 阶段 4：ULA（40 脚平封 DIP，显示文件直接读主 DRAM——板上没有独立显存 SRAM） */
     defs.push({
-      id: "ula", name: "FERRANTI ULA", sub: "6C001E-5 · CUSTOM CHIP", kind: null,
+      id: "ula", name: "ULA 定制芯片", sub: "FERRANTI · 6C001E-5", kind: null,
       phase: 3, delay: 0.15,
       pos: [0.0, -0.5], landY: 0.05, yaw: 0, anchorY: 0.12,
       build: function () { return dip(0.42, 0.155, 40, texULA, 0.042); }
     });
     /* 阶段 5：Z80A + 23128 ROM + 晶振 */
     defs.push({
-      id: "z80", name: "Z80A CPU", sub: "DIP-40 · 3.5 MHZ", kind: null,
+      id: "z80", name: "中央处理器 Z80A", sub: "DIP-40 · 3.5 MHZ", kind: null,
       phase: 4, delay: 0.2,
       pos: [0.32, -0.38], landY: 0.05, yaw: Math.PI / 2, anchorY: 0.12,
       build: function () { return dip(0.52, 0.15, 40, texZ80); }
     });
     defs.push({
-      id: "rom", name: "23128 ROM", sub: "16K × 8 · 48K BASIC", kind: "23128",
+      id: "rom", name: "系统 ROM 23128", sub: "16K × 8 · 48K BASIC", kind: "23128",
       phase: 4, delay: 1.6,
       pos: [-0.34, -0.55], landY: 0.05, yaw: 0, anchorY: 0.1,
       build: function () { return dip(0.37, 0.15, 28, texROM); }
     });
     defs.push({
-      id: "xtal", name: "CRYSTAL", sub: "14 MHZ · ÷4 → 3.5 MHZ", kind: "XTAL",
+      id: "xtal", name: "晶振", sub: "14 MHZ · ÷4 → 3.5 MHZ", kind: "XTAL",
       phase: 4, delay: 3.0,
       pos: [0.62, -0.55], landY: 0.05, yaw: 0.3, anchorY: 0.08,
       build: crystal
     });
     /* 阶段 6：RF 盒 / EAR+MIC 插座 / 键盘排线 / 电源区 */
     defs.push({
-      id: "rf", name: "RF MODULATOR", sub: "UHF TV OUT", kind: null,
+      id: "rf", name: "射频调制器", sub: "UHF TV OUT", kind: null,
       phase: 5, delay: 0.1,
       pos: [0.95, -0.6], landY: 0.05, yaw: 0, anchorY: 0.28,
       build: rfBox
     });
     defs.push({
-      id: "ear", name: "EAR JACK", sub: "3.5MM · TAPE INPUT", kind: null,
+      id: "ear", name: "EAR 插座", sub: "3.5MM · TAPE INPUT", kind: null,
       phase: 5, delay: 0.52,
       pos: [-1.16, 0.30], landY: 0.05, yaw: 0, anchorY: 0.12,
       build: tapeJack
     });
     defs.push({
-      id: "mic", name: "MIC JACK", sub: "3.5MM · TAPE OUTPUT", kind: null,
+      id: "mic", name: "MIC 插座", sub: "3.5MM · TAPE OUTPUT", kind: null,
       phase: 5, delay: 0.78,
       pos: [-1.16, 0.02], landY: 0.05, yaw: 0, anchorY: 0.12,
       build: tapeJack
     });
     defs.push({
-      id: "mem0", name: "MEMBRANE A", sub: "8-WAY KEYBOARD HEADER", kind: null,
+      id: "mem0", name: "膜键盘排线 A", sub: "8-WAY KEYBOARD HEADER", kind: null,
       phase: 5, delay: 0.94,
       pos: [0.70, 1.08], landY: 0.005, yaw: 0, anchorY: 0.12,
       build: membrane
     });
     defs.push({
-      id: "mem1", name: "MEMBRANE B", sub: "8-WAY KEYBOARD HEADER", kind: null,
+      id: "mem1", name: "膜键盘排线 B", sub: "8-WAY KEYBOARD HEADER", kind: null,
       phase: 5, delay: 1.16,
       pos: [0.92, 1.08], landY: 0.005, yaw: 0, anchorY: 0.12,
       build: membrane
     });
     defs.push({
-      id: "reg5", name: "7805", sub: "+5V REGULATOR", kind: null,
+      id: "reg5", name: "稳压器 7805", sub: "+5V REGULATOR", kind: null,
       phase: 5, delay: 1.36,
       pos: [-0.78, -0.66], landY: 0.05, yaw: 0, anchorY: 0.24,
       build: function () { return to220(true, tex7805); }
     });
     defs.push({
-      id: "reg12", name: "78M12", sub: "+12V FOR 4116", kind: null,
+      id: "reg12", name: "稳压器 78M12", sub: "+12V FOR 4116", kind: null,
       phase: 5, delay: 1.78,
       pos: [-0.55, -0.66], landY: 0.05, yaw: 0, anchorY: 0.22,
       build: function () { return to220(false, tex78M12); }
     });
     defs.push({
-      id: "caps", name: "SMOOTHING CAPS", sub: "2200 µF × 2", kind: null,
+      id: "caps", name: "滤波电容", sub: "2200 µF × 2", kind: null,
       phase: 5, delay: 2.2,
       pos: [-0.88, -0.36], landY: 0.05, yaw: 0, anchorY: 0.18,
       build: caps
     });
     defs.push({
-      id: "diodes", name: "-5V RECTIFIER", sub: "4116 THIRD RAIL", kind: null,
+      id: "diodes", name: "-5V 整流二极管", sub: "4116 THIRD RAIL", kind: null,
       phase: 5, delay: 2.62,
       pos: [-0.64, -0.38], landY: 0.05, yaw: 0, anchorY: 0.08,
       build: diodes
     });
     /* 阶段 7：电源线接上 */
     defs.push({
-      id: "cord", name: "POWER LEAD", sub: "9V DC · CENTER +", kind: null,
+      id: "cord", name: "电源线", sub: "9V DC · CENTER +", kind: null,
       phase: 6, delay: 0.25,
       pos: [-1.0, -0.9], landY: 0.02, yaw: 0, anchorY: 0.14,
       build: cord

@@ -261,3 +261,10 @@ body {
   #card-title .t3 { display: none; }
   .panel header .meta { display: none; }
 }
+
+/* 双语排版保护：中文面板标题不折行，英文副位超长时省略号 */
+.panel header b { flex: none; white-space: nowrap; }
+.panel header .meta { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 干净录屏模式：D 键或 ?dash=0 隐藏仪表盘与底部角标 */
+body.no-dash #dash, body.no-dash #corner-left, body.no-dash #corner-right { display: none !important; }

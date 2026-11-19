@@ -19,16 +19,16 @@
   function buildDOM() {
     var dash = document.getElementById("dash");
     dash.innerHTML =
-      '<section class="panel"><header><i class="dot green"></i><b>MEMORY</b><span class="meta">64K MAP · $0000-$FFFF</span></header>' +
+      '<section class="panel"><header><i class="dot green"></i><b>内存地图</b><span class="meta">64K MAP · $0000-$FFFF</span></header>' +
       '<div class="body"><canvas id="c-mem"></canvas>' +
       '<div class="axis"><span>$0000</span><span>$4000</span><span>$8000</span><span>$C000</span><span>$FFFF</span></div>' +
       '<div class="legend"><span><i style="background:#3EB435"></i>ROM 16K</span>' +
-      '<span><i style="background:#22B0C8"></i>DISPLAY 6.7K</span>' +
-      '<span><i style="background:#4169D8"></i>RAM BANKS</span>' +
-      '<span id="mem-seat" class="seat">0 / 30 SEATED</span></div>' +
+      '<span><i style="background:#22B0C8"></i>显示文件 6.7K</span>' +
+      '<span><i style="background:#4169D8"></i>内存区块</span>' +
+      '<span id="mem-seat" class="seat">0 / 30 已落板</span></div>' +
       '</div></section>' +
 
-      '<section class="panel"><header><i class="dot red"></i><b>Z80A</b><span class="meta">REGISTERS · 0.5S TICK</span></header>' +
+      '<section class="panel"><header><i class="dot red"></i><b>寄存器</b><span class="meta">Z80A · 0.5S TICK</span></header>' +
       '<div class="body"><div class="regs">' +
       '<div class="reg"><span>PC</span><b id="rg-pc">----</b></div>' +
       '<div class="reg"><span>SP</span><b id="rg-sp">----</b></div>' +
@@ -36,23 +36,23 @@
       '<div class="reg"><span>BC</span><b id="rg-bc">----</b></div>' +
       '<div class="reg"><span>DE</span><b id="rg-de">----</b></div>' +
       '<div class="reg"><span>HL</span><b id="rg-hl">----</b></div>' +
-      '</div><div class="panel-foot"><span class="chip" id="rg-clk">CLK 3.5 MHZ</span><span id="rg-note">HALT</span></div>' +
+      '</div><div class="panel-foot"><span class="chip" id="rg-clk">时钟 3.5 MHZ</span><span id="rg-note">停机 HALT</span></div>' +
       '</div></section>' +
 
-      '<section class="panel"><header><i class="dot cyan"></i><b>ULA</b><span class="meta">FRAME COUNTER · 50 HZ</span></header>' +
+      '<section class="panel"><header><i class="dot cyan"></i><b>帧计数</b><span class="meta">ULA · 50 HZ</span></header>' +
       '<div class="body"><div class="ula-row"><div class="ula-count" id="ula-frames">00000</div>' +
       '<div class="ula-right"><canvas id="c-ula"></canvas>' +
-      '<div class="axis"><span>LINE 0</span><span>312</span></div></div></div>' +
+      '<div class="axis"><span>行 0</span><span>312</span></div></div></div>' +
       '</div></section>' +
 
-      '<section class="panel"><header><i class="dot yellow"></i><b>TAPE</b><span class="meta">EAR · 3.5MM</span></header>' +
+      '<section class="panel"><header><i class="dot yellow"></i><b>磁带</b><span class="meta">EAR · 3.5MM</span></header>' +
       '<div class="body"><canvas id="c-tape"></canvas>' +
-      '<div class="panel-foot"><span class="chip" id="tape-chip">IDLE</span><span id="tape-note">EAR → ULA · RC BIAS</span></div>' +
+      '<div class="panel-foot"><span class="chip" id="tape-chip">空闲 IDLE</span><span id="tape-note">EAR → ULA · RC BIAS</span></div>' +
       '</div></section>' +
 
-      '<section class="panel"><header><i class="dot blue"></i><b>RAILS</b><span class="meta">9V DC IN</span></header>' +
+      '<section class="panel"><header><i class="dot blue"></i><b>电源轨</b><span class="meta">9V DC IN</span></header>' +
       '<div class="body"><div id="rail-rows"></div>' +
-      '<div class="panel-foot"><span class="chip" id="rail-note">4116 · 3 RAILS</span><span class="v" id="rail-w">0.0 <small>W</small></span></div>' +
+      '<div class="panel-foot"><span class="chip" id="rail-note">4116 · 三路供电</span><span class="v" id="rail-w">0.0 <small>W</small></span></div>' +
       '</div></section>';
 
     /* 电源轨 4 行 */
@@ -124,7 +124,7 @@
     document.getElementById("rg-hl").textContent = r.hl;
     document.getElementById("rg-clk").className = "chip" + (st.xtalIn ? " on" : "");
     document.getElementById("rg-note").textContent =
-      !st.power ? "HALT" : (st.mode === "LOADING" ? "READING" : "RUN");
+      !st.power ? "停机 HALT" : (st.mode === "LOADING" ? "读带 READING" : "运行 RUN");
   }
 
   /* ---- ③ ULA 帧计数 + 50Hz 扫描条 ---- */
@@ -152,6 +152,7 @@
   }
 
   /* ---- ④ 磁带音频波形（boot 静止 / load pilot tone 条纹） ---- */
+  var TAPE_TEXT = { idle: "空闲 IDLE", pilot: "导频 PILOT", data: "数据 DATA" };
   function drawTape(st, dt) {
     var ctx = ctxTape, W = tapeW, H = tapeH;
     ctx.fillStyle = "#141618";
@@ -176,7 +177,7 @@
     }
     ctx.stroke();
     var chip = document.getElementById("tape-chip");
-    chip.textContent = st.tape.toUpperCase();
+    chip.textContent = TAPE_TEXT[st.tape] || st.tape.toUpperCase();
     chip.className = "chip" + (st.tape !== "idle" ? " on" : "");
   }
 
@@ -206,7 +207,7 @@
     drawUla(st);
     drawTape(st, dt);
     drawRails(st);
-    document.getElementById("mem-seat").textContent = st.seated + " / 30 SEATED";
+    document.getElementById("mem-seat").textContent = st.seated + " / 30 已落板";
   }
 
   ZX48.Dashboard = { build: buildDOM, update: update };

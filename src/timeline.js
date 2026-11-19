@@ -1,60 +1,60 @@
 /* 时间线：裸板 → 16K RAM → 32K RAM → ULA → CPU → 外设 → 上电 → LOAD（46s 循环） */
 (function (ZX48) {
   var phases = [
-    { id: "pcb", name: "PCB · ISSUE 3B", dur: 4, dot: "red",
+    { id: "pcb", name: "裸板 · ISSUE 3B", dur: 4, dot: "red",
       cam: { theta: -0.55, phi: 1.02, r: 5.4, target: [0, 0.18, 0] }, drift: 0.04 },
-    { id: "ram16", name: "16K DRAM · 8 × 4116", dur: 6, dot: "yellow",
+    { id: "ram16", name: "16K 内存 · 8 × 4116", dur: 6, dot: "yellow",
       cam: { theta: -0.52, phi: 0.92, r: 2.35, target: [-0.55, 0.06, 0.08] }, drift: 0.02 },
-    { id: "ram32", name: "32K DRAM · 8 × 4532", dur: 6, dot: "yellow",
+    { id: "ram32", name: "32K 内存 · 8 × 4532", dur: 6, dot: "yellow",
       cam: { theta: -0.34, phi: 0.92, r: 2.35, target: [0.62, 0.06, 0.08] }, drift: 0.02 },
-    { id: "ula", name: "FERRANTI ULA", dur: 6, dot: "green",
+    { id: "ula", name: "定制芯片 · FERRANTI ULA", dur: 6, dot: "green",
       cam: { theta: -0.6, phi: 0.95, r: 2.6, target: [0.05, 0.1, -0.25] }, drift: 0.018 },
-    { id: "cpu", name: "Z80A + 16K ROM", dur: 5, dot: "cyan",
+    { id: "cpu", name: "核心芯片 · Z80A + 16K ROM", dur: 5, dot: "cyan",
       cam: { theta: -0.78, phi: 0.92, r: 2.5, target: [0.28, 0.08, -0.35] }, drift: 0.015 },
-    { id: "conn", name: "RF · TAPE · KEYS · PSU", dur: 6, dot: "cyan",
+    { id: "conn", name: "外设接入 · RF · 磁带 · 键盘 · 电源", dur: 6, dot: "cyan",
       cam: { theta: -0.5, phi: 0.98, r: 4.0, target: [0.1, 0.15, -0.05] }, drift: 0.022 },
-    { id: "boot", name: "POWER ON · © 1982", dur: 6, dot: "red",
+    { id: "boot", name: "上电 · © 1982", dur: 6, dot: "red",
       cam: { theta: -0.62, phi: 1.0, r: 3.4, target: [-0.5, 0.4, -0.85] }, drift: 0.015 },
-    { id: "load", name: "LOAD · PILOT TONE", dur: 7, dot: "green",
+    { id: "load", name: "磁带加载 · LOAD 导频音", dur: 7, dot: "green",
       cam: { theta: -0.5, phi: 0.98, r: 2.75, target: [-0.52, 0.42, -0.8] }, drift: 0.012 }
   ];
 
-  /* 每阶段固定标签（at = 进入阶段后延时出现秒数） */
+  /* 每阶段固定标签（at = 进入阶段后延时出现秒数）——text 中文主位、sub 英文副位全大写 */
   var PINNED = {
     pcb: { at: 1.9, items: function () {
-      return [{ id: "p-edge", obj: ZX48.Scene3D.edgeStrip, text: "EDGE CONNECTOR", sub: "2 × 28 · GOLD FINGERS" }];
+      return [{ id: "p-edge", obj: ZX48.Scene3D.edgeStrip, text: "边缘连接器", sub: "2 × 28 · GOLD FINGERS" }];
     } },
     ram16: { at: 0.5, items: function () {
-      return [{ id: "p-r16", obj: ZX48.Parts.group("r16-0"), text: "4116 · 16K×1 DRAM", sub: "+5V / +12V / −5V" }];
+      return [{ id: "p-r16", obj: ZX48.Parts.group("r16-0"), text: "内存颗粒 4116", sub: "16K × 1 DRAM · +5V / +12V / −5V" }];
     } },
     ram32: { at: 0.5, items: function () {
-      return [{ id: "p-r32", obj: ZX48.Parts.group("r32-0"), text: "4532 · 64K×1 DIE", sub: "32K USED · $8000-$FFFF" }];
+      return [{ id: "p-r32", obj: ZX48.Parts.group("r32-0"), text: "内存颗粒 4532", sub: "64K × 1 DIE · 32K USED · $8000-$FFFF" }];
     } },
     ula: { at: 0.5, items: function () {
       return [
-        { id: "p-ula", obj: ZX48.Parts.group("ula"), text: "ULA 6C001E-5", sub: "custom chip · video reads main DRAM", tone: "white" }
+        { id: "p-ula", obj: ZX48.Parts.group("ula"), text: "ULA 定制芯片", sub: "FERRANTI 6C001E-5 · VIDEO READS MAIN DRAM", tone: "white" }
       ];
     } },
     cpu: { at: 0.5, items: function () {
       return [
-        { id: "p-z80", obj: ZX48.Parts.group("z80"), text: "Z80A · 3.5 MHZ" },
-        { id: "p-rom", obj: ZX48.Parts.group("rom"), text: "16K ROM · 48K BASIC", tone: "white" }
+        { id: "p-z80", obj: ZX48.Parts.group("z80"), text: "中央处理器 Z80A", sub: "3.5 MHZ" },
+        { id: "p-rom", obj: ZX48.Parts.group("rom"), text: "系统 ROM 16K", sub: "48K BASIC", tone: "white" }
       ];
     } },
     conn: { at: 0.4, items: function () {
       return [
-        { id: "p-rf", obj: ZX48.Parts.group("rf"), text: "RF MODULATOR · UHF" },
-        { id: "p-ear", obj: ZX48.Parts.group("ear"), text: "EAR · TAPE IN" },
-        { id: "p-mic", obj: ZX48.Parts.group("mic"), text: "MIC · TAPE OUT", tone: "white" },
-        { id: "p-mem", obj: ZX48.Parts.group("mem0"), text: "MEMBRANE · 2 × 8-WAY" },
-        { id: "p-psu", obj: ZX48.Parts.group("reg5"), text: "7805 · +5V", tone: "white" }
+        { id: "p-rf", obj: ZX48.Parts.group("rf"), text: "射频调制器", sub: "RF MODULATOR · UHF" },
+        { id: "p-ear", obj: ZX48.Parts.group("ear"), text: "EAR 磁带输入", sub: "TAPE IN" },
+        { id: "p-mic", obj: ZX48.Parts.group("mic"), text: "MIC 磁带输出", sub: "TAPE OUT", tone: "white" },
+        { id: "p-mem", obj: ZX48.Parts.group("mem0"), text: "膜键盘排线", sub: "MEMBRANE · 2 × 8-WAY" },
+        { id: "p-psu", obj: ZX48.Parts.group("reg5"), text: "稳压器 7805", sub: "+5V", tone: "white" }
       ];
     } },
     boot: { at: 2.1, items: function () {
       return [{ id: "p-scr", obj: ZX48.Scene3D.screenGroup, text: "© 1982 SINCLAIR RESEARCH", sub: "256 × 192 · 50 HZ" }];
     } },
     load: { at: 0.4, items: function () {
-      return [{ id: "p-scr", obj: ZX48.Scene3D.screenGroup, text: "LOAD · PILOT TONE", sub: "RED / CYAN STRIPES · 50 HZ", tone: "white" }];
+      return [{ id: "p-scr", obj: ZX48.Scene3D.screenGroup, text: "LOAD 条纹屏", sub: "PILOT TONE · RED / CYAN STRIPES · 50 HZ", tone: "white" }];
     } }
   };
 
@@ -77,6 +77,9 @@
       tape: "idle", seated: 0
     };
   }
+
+  /* 状态卡模式显示：内部状态值保持英文不变，显示为主位中文 + 副位代号 */
+  var MODE_TEXT = { BUILD: "装配 BUILD", BOOT: "开机 BOOT", LOADING: "加载 LOADING" };
 
   function $(id) { return document.getElementById(id); }
 
@@ -228,7 +231,7 @@
     }
 
     /* ---- 状态卡 / 阶段胶囊 ---- */
-    dom.mode.textContent = st.mode;
+    dom.mode.textContent = MODE_TEXT[st.mode] || st.mode;
     dom.mode.className = "mode" + (st.mode === "LOADING" ? " loading" : (st.mode === "BOOT" ? " boot" : ""));
     dom.clock.textContent = st.xtalIn ? "3.5 MHZ" : "—";
     dom.ram.textContent = st.ramK + "K";

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SINCLAIR · ZX SPECTRUM 48K — 主板装配模拟</title>
+<title>辛克莱 ZX Spectrum 48K · 1982 — 主板装配模拟</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="src/styles.css">
 </head>
@@ -16,25 +16,25 @@
 
   <!-- 左上标题卡（彩虹下划线由 CSS ::after 绘制） -->
   <div id="card-title" class="card">
-    <div class="t1">SINCLAIR&ensp;·&ensp;ZX SPECTRUM 48K&ensp;·&ensp;ISSUE 3B</div>
-    <div class="t2">Fig. 02 — sixteen chips of RAM and pilot-tone stripes, 1982</div>
+    <div class="t1">辛克莱&ensp;·&ensp;ZX SPECTRUM 48K&ensp;·&ensp;ISSUE 3B</div>
+    <div class="t2">图 02 — 十六颗 RAM、一颗 ULA，和磁带里吱吱作响的导频音</div>
     <div class="t3">拖动旋转 · 滚轮缩放 · 点击零件看标签 · 空格暂停 · R 重播 · 数字键 1-8 跳阶段</div>
   </div>
 
   <!-- 右上状态卡 -->
   <div id="card-status" class="card">
-    <div class="k">MODE</div>
-    <div class="mode" id="st-mode">—</div>
-    <div class="row"><span class="k">CLOCK</span><b id="st-clock">—</b></div>
-    <div class="row"><span class="k">RAM</span><b id="st-ram">0K</b></div>
-    <div class="row"><span class="k">PARTS</span><b id="st-parts">0 / 30</b></div>
+    <div class="k">模式 MODE</div>
+    <div class="mode" id="st-mode">装配 BUILD</div>
+    <div class="row"><span class="k">时钟 CLOCK</span><b id="st-clock">—</b></div>
+    <div class="row"><span class="k">内存 RAM</span><b id="st-ram">0K</b></div>
+    <div class="row"><span class="k">零件 PARTS</span><b id="st-parts">0 / 30</b></div>
   </div>
 
   <!-- 底部阶段胶囊 -->
-  <div id="phase-pill"><i id="phase-dot"></i><span id="phase-text">STANDBY</span></div>
+  <div id="phase-pill"><i id="phase-dot"></i><span id="phase-text">待机 STANDBY</span></div>
 
   <!-- 底部四角 -->
-  <div id="corner-left" class="corner">ZX SPECTRUM · ISSUE 3B · 1982</div>
+  <div id="corner-left" class="corner">辛克莱 ZX SPECTRUM · ISSUE 3B · 1982</div>
   <div id="corner-right" class="corner">48K RAM · 16K ROM · 3.5 MHZ</div>
 
   <!-- 底部仪表盘（由 dashboard.js 生成） -->
@@ -74,5 +74,6 @@
   }, 6000);
 })();
 </script>
+  <script>if (new URLSearchParams(location.search).get("dash") === "0") document.body.classList.add("no-dash");</script>
 </body>
 </html>

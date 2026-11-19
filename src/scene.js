@@ -104,9 +104,9 @@
       mesh: mesh,
       M: M,
       clickables: [
-        { group: boardGroup, name: "PCB · ISSUE 3B", sub: "24 × 16 CM · SINGLE-SIDED" },
-        { group: edgeStrip, name: "EDGE CONNECTOR", sub: "2 × 28 WAY · GOLD FINGERS" },
-        { group: screenGroup, name: "SCREEN", sub: "256 × 192 · ULA OUTPUT" }
+        { group: boardGroup, name: "主板 PCB", sub: "ISSUE 3B · 24 × 16 CM · SINGLE-SIDED" },
+        { group: edgeStrip, name: "边缘连接器", sub: "2 × 28 WAY · GOLD FINGERS" },
+        { group: screenGroup, name: "小屏幕", sub: "256 × 192 · ULA OUTPUT" }
       ],
       flyBoardIn: flyBoardIn,
       sealBoard: sealBoard,
